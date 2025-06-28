@@ -1,5 +1,5 @@
 
-# 📄 Análise técnica — Starlink ASN 14593 (versão ampliada)
+# 📄 Análise técnica — Starlink ASN 14593
 
 ## 📌 Sumário Executivo
 
