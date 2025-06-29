@@ -49,9 +49,9 @@ Consulta pública:
 **Exemplos de blocos ativos:**
 
 ```
-142.135.0.0/16
-100.64.0.0/10 (CGNAT RFC6598)
-2602:810::/36 (IPv6)
+142.123.0.0/18
+100.67.0.0/10 (CGNAT RFC6598)
+2692:812::/36 (IPv6)
 ```
 
 ### 📍 ASN Adjacent / Peers
