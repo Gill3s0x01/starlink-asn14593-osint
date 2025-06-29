@@ -63,8 +63,8 @@ A iniciativa integra técnicas de **OSINT**, **análise forense de rede**, **con
 
 ```bash
 whois -h whois.radb.net -- '-i origin AS14593' | grep 'route:'
-curl https://ipinfo.io/142.135.0.1
-mtr 142.135.0.1
+curl https://ipinfo.io/142.123.0.1
+mtr 142.123.0.1
 ```
 
 ---
