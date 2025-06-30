@@ -54,6 +54,15 @@ Consulta pública:
 2692:812::/36 (IPv6)
 ```
 
+### 📊 Upstreams e Downstreams
+
+Consulta via BGPView API:
+
+- Upstreams: ASN upstreams conectados diretamente ao AS14593
+- Downstreams: ASN clientes ou redes que recebem rotas do AS14593
+
+Resultado exportado nos arquivos asn_upstreams.json e asn_downstreams.json via script.
+
 ### 📍 ASN Adjacent / Peers
 
 - **Peers Tier 1:** Telia, GTT, Level3
@@ -65,9 +74,9 @@ Consulta pública:
 ### 📌 Fases
 
 **Fase 1 — Identificação ASN:** Whois, BGPView, bgp.he.net  
-**Fase 2 — Coleta Prefixos e IPs:** BGPView API, ipinfo.io, db-ip.com  
+**Fase 2 — Coleta Prefixos e IPs:** ipinfo.io, db-ip.com, coleta de ASN upstream e downstream via BGPView API, execução de traceroute para prefixos amostrados  
 **Fase 3 — Validação:** ping, traceroute, MTR, Looking Glass  
-**Fase 4 — Correlação de Indicadores:** CGNAT, padrões, clusterização de horários  
+**Fase 4 — Correlação de Indicadores:** CGNAT, padrões, clusterização de horários 
 **Fase 5 — Reporte e Integração:** Relatório, SIEM/TIP, dashboards OSINT  
 
 ### 📌 Ferramentas e Comandos

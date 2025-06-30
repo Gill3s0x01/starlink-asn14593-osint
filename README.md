@@ -36,6 +36,9 @@ A iniciativa integra técnicas de **OSINT**, **análise forense de rede**, **con
 - `prefixos_starlink_detalhado.csv` — Export detalhado dos prefixos com país
 - `starlink_osint_dashboard.py` — Script Python para coleta, agrupamento e gráficos
 - `README.md` — Este arquivo de apresentação
+- `asn_upstreams.json` — Lista de ASNs upstream do AS14593
+- `asn_downstreams.json` — Lista de ASNs downstream do AS14593
+- `traceroute_<ip>.txt` — Resultados de traceroute para prefixos amostrados
 
 ---
 
@@ -64,6 +67,8 @@ A iniciativa integra técnicas de **OSINT**, **análise forense de rede**, **con
 ```bash
 whois -h whois.radb.net -- '-i origin AS14593' | grep 'route:'
 curl https://ipinfo.io/142.123.0.1
+curl https://api.bgpview.io/asn/14593/upstreams
+curl https://api.bgpview.io/asn/14593/downstreams
 mtr 142.123.0.1
 ```
 
@@ -83,7 +88,7 @@ pip install requests matplotlib
 python3 starlink_osint_dashboard.py
 ```
 
-Os gráficos de distribuição por país serão exibidos e os arquivos `prefixos_starlink.csv` e `prefixos_starlink.json` serão gerados no diretório.
+Os gráficos de distribuição por país serão exibidos e os arquivos `prefixos_starlink.csv` e `prefixos_starlink.json` e os Os arquivos `asn_upstreams.json`, `asn_downstreams.json` e traceroutes em `.txt` serão gerados no diretório.
 
 <p align="center">
   <img src="./assets/Figure_1.png" alt="Saltcom" width="200"/>
