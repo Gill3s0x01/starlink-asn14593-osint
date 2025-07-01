@@ -1,0 +1,26 @@
+📄 Full IP OSINT Report for: 200.160.0.8
+
+== BGPVIEW ==
+asn: Not found
+organization: Not found
+country: Not found
+prefix: 200.160.0.0/20
+
+== IPINFO ==
+asn: 22548
+organization: Núcleo de Inf. e Coord. do Ponto BR - NIC.BR
+country: BR
+
+== IP-API ==
+asn: 22548
+organization: Núcleo de Inf. e Coord. do Ponto BR - NIC.BR
+country: Brazil
+city: São Paulo
+
+== RIPE ==
+asn: None
+prefix: None
+
+== RDAP ==
+Query failed or no data available.
+

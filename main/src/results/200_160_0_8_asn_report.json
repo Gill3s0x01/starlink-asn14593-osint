@@ -1,0 +1,24 @@
+{
+    "bgpview": {
+        "asn": "Not found",
+        "organization": "Not found",
+        "country": "Not found",
+        "prefix": "200.160.0.0/20"
+    },
+    "ipinfo": {
+        "asn": "22548",
+        "organization": "N\u00facleo de Inf. e Coord. do Ponto BR - NIC.BR",
+        "country": "BR"
+    },
+    "ip-api": {
+        "asn": "22548",
+        "organization": "N\u00facleo de Inf. e Coord. do Ponto BR - NIC.BR",
+        "country": "Brazil",
+        "city": "S\u00e3o Paulo"
+    },
+    "ripe": {
+        "asn": null,
+        "prefix": null
+    },
+    "rdap": null
+}

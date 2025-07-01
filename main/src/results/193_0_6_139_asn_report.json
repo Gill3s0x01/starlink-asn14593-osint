@@ -1,0 +1,33 @@
+{
+    "bgpview": {
+        "asn": "Not found",
+        "organization": "Not found",
+        "country": "Not found",
+        "prefix": "193.0.0.0/21"
+    },
+    "ipinfo": {
+        "asn": "3333",
+        "organization": "Reseaux IP Europeens Network Coordination Centre (RIPE NCC)",
+        "country": "NL"
+    },
+    "ip-api": {
+        "asn": "3333",
+        "organization": "Reseaux IP Europeens Network Coordination Centre (RIPE NCC)",
+        "country": "The Netherlands",
+        "city": "Amsterdam"
+    },
+    "ripe": {
+        "asn": null,
+        "prefix": null
+    },
+    "rdap": {
+        "handle": "193.0.0.0 - 193.0.7.255",
+        "name": "RIPE-NCC-MNT",
+        "abuse_email": "group",
+        "country": "NL",
+        "ip_version": "v4",
+        "start_address": "193.0.0.0",
+        "end_address": "193.0.7.255",
+        "type": "ASSIGNED PA"
+    }
+}

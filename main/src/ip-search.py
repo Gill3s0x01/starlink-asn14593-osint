@@ -2,7 +2,7 @@ import requests
 import json
 
 
-def consulta_bgpview(ip):
+def consult_bgpview(ip):
     url = f"https://api.bgpview.io/ip/{ip}"
     try:
         r = requests.get(url, timeout=5)
@@ -13,7 +13,7 @@ def consulta_bgpview(ip):
     return None
 
 
-def consulta_ipinfo(ip):
+def consult_ipinfo(ip):
     url = f"https://ipinfo.io/{ip}/json"
     try:
         r = requests.get(url, timeout=5)
@@ -24,7 +24,7 @@ def consulta_ipinfo(ip):
     return None
 
 
-def consulta_ipapi(ip):
+def consult_ipapi(ip):
     url = f"http://ip-api.com/json/{ip}?fields=status,message,query,as,isp,country,city"
     try:
         r = requests.get(url, timeout=5)
@@ -35,8 +35,7 @@ def consulta_ipapi(ip):
     return None
 
 
-def consulta_ripe(ip):
-    # Vamos usar prefix-overview endpoint do RIPEstat, que retorna info do prefixo e ASN
+def consult_ripe(ip):
     url = f"https://stat.ripe.net/data/prefix-overview/data.json?resource={ip}"
     try:
         r = requests.get(url, timeout=5)
@@ -47,32 +46,48 @@ def consulta_ripe(ip):
     return None
 
 
-def extrair_dados(dados_bgpview, dados_ipinfo, dados_ipapi, dados_ripe):
-    resultado = {}
+def consult_rdap(ip):
+    urls = [
+        f"https://rdap.registro.br/ip/{ip}",
+        f"https://rdap.arin.net/registry/ip/{ip}",
+    ]
+
+    for url in urls:
+        try:
+            r = requests.get(url, timeout=5)
+            if r.status_code == 200:
+                return r.json()
+        except:
+            pass
+    return None
+
+
+def extract_data(data_bgpview, data_ipinfo, data_ipapi, data_ripe, data_rdap):
+    results = {}
 
     # bgpview
-    if dados_bgpview and dados_bgpview.get("status") == "ok":
-        asn_data = dados_bgpview["data"].get("asn")
+    if data_bgpview and data_bgpview.get("status") == "ok":
+        asn_data = data_bgpview["data"].get("asn")
         if asn_data:
             asn = asn_data.get("asn")
             org = asn_data.get("name")
             country = asn_data.get("country_code")
         else:
-            asn = org = country = None
-        prefixes = dados_bgpview["data"].get("prefixes", [])
-        prefix = prefixes[0].get("prefix") if prefixes else None
-        resultado["bgpview"] = {
+            asn = org = country = "Not found"
+        prefixes = data_bgpview["data"].get("prefixes", [])
+        prefix = prefixes[0].get("prefix") if prefixes else "Not found"
+        results["bgpview"] = {
             "asn": asn,
-            "org": org,
+            "organization": org,
             "country": country,
             "prefix": prefix,
         }
     else:
-        resultado["bgpview"] = None
+        results["bgpview"] = None
 
     # ipinfo
-    if dados_ipinfo and "error" not in dados_ipinfo:
-        asn_info = dados_ipinfo.get("org", "")
+    if data_ipinfo and "error" not in data_ipinfo:
+        asn_info = data_ipinfo.get("org", "")
         asn = None
         org = None
         if asn_info:
@@ -82,14 +97,14 @@ def extrair_dados(dados_bgpview, dados_ipinfo, dados_ipapi, dados_ripe):
                 org = parts[1]
             else:
                 org = asn_info
-        country = dados_ipinfo.get("country")
-        resultado["ipinfo"] = {"asn": asn, "org": org, "country": country}
+        country = data_ipinfo.get("country")
+        results["ipinfo"] = {"asn": asn, "organization": org, "country": country}
     else:
-        resultado["ipinfo"] = None
+        results["ipinfo"] = None
 
     # ip-api
-    if dados_ipapi and dados_ipapi.get("status") == "success":
-        asn_info = dados_ipapi.get("as", "")
+    if data_ipapi and data_ipapi.get("status") == "success":
+        asn_info = data_ipapi.get("as", "")
         asn = None
         org = None
         if asn_info:
@@ -99,14 +114,20 @@ def extrair_dados(dados_bgpview, dados_ipinfo, dados_ipapi, dados_ripe):
                 org = parts[1]
             else:
                 org = asn_info
-        country = dados_ipapi.get("country")
-        resultado["ipapi"] = {"asn": asn, "org": org, "country": country}
+        country = data_ipapi.get("country")
+        city = data_ipapi.get("city")
+        results["ip-api"] = {
+            "asn": asn,
+            "organization": org,
+            "country": country,
+            "city": city,
+        }
     else:
-        resultado["ipapi"] = None
+        results["ip-api"] = None
 
     # ripe
-    if dados_ripe and dados_ripe.get("status") == "ok":
-        data = dados_ripe.get("data", {})
+    if data_ripe and data_ripe.get("status") == "ok":
+        data = data_ripe.get("data", {})
         asn = None
         prefix = None
         if data:
@@ -114,72 +135,70 @@ def extrair_dados(dados_bgpview, dados_ipinfo, dados_ipapi, dados_ripe):
             if prefixes:
                 prefix = prefixes[0].get("prefix")
                 asn = prefixes[0].get("asns")[0] if prefixes[0].get("asns") else None
-        resultado["ripe"] = {"asn": asn, "prefix": prefix}
+        results["ripe"] = {"asn": asn, "prefix": prefix}
     else:
-        resultado["ripe"] = None
+        results["ripe"] = None
 
-    return resultado
+    # rdap
+    if data_rdap:
+        entities = data_rdap.get("entities", [])
+        abuse_email = ""
+        name = ""
+        for ent in entities:
+            roles = ent.get("roles", [])
+            if "abuse" in roles:
+                abuse_email = ent.get("vcardArray", [])[1][2][3]
+            if "registrant" in roles:
+                name = ent.get("vcardArray", [])[1][1][3]
+        results["rdap"] = {
+            "handle": data_rdap.get("handle"),
+            "name": name,
+            "abuse_email": abuse_email,
+            "country": data_rdap.get("country"),
+            "ip_version": data_rdap.get("ipVersion"),
+            "start_address": data_rdap.get("startAddress"),
+            "end_address": data_rdap.get("endAddress"),
+            "type": data_rdap.get("type"),
+        }
+    else:
+        results["rdap"] = None
+
+    return results
 
 
-def gerar_relatorio(ip, dados_compilados):
-    json_file = f"{ip.replace('.', '_')}_asn_compilado.json"
-    txt_file = f"{ip.replace('.', '_')}_asn_compilado.txt"
+def generate_report(ip, data_compiled):
+    json_file = f"{ip.replace('.', '_')}_asn_report.json"
+    txt_file = f"{ip.replace('.', '_')}_asn_report.txt"
 
-    # Salvar JSON
-    with open(json_file, "w") as jf:
-        json.dump(dados_compilados, jf, indent=4)
+    with open(json_file, "w", encoding="utf-8") as jf:
+        json.dump(data_compiled, jf, indent=4)
 
-    # Salvar TXT legível
-    with open(txt_file, "w") as tf:
-        tf.write(f"Relatório compilado ASN para IP: {ip}\n\n")
-
-        for key, val in dados_compilados.items():
-            tf.write(f"== Fonte: {key.upper()} ==\n")
+    with open(txt_file, "w", encoding="utf-8") as tf:
+        tf.write(f"📄 Full IP OSINT Report for: {ip}\n\n")
+        for key, val in data_compiled.items():
+            tf.write(f"== {key.upper()} ==\n")
             if val is None:
-                tf.write("Falha na consulta ou dados não disponíveis.\n\n")
+                tf.write("Query failed or no data available.\n\n")
                 continue
             for k, v in val.items():
                 tf.write(f"{k}: {v}\n")
             tf.write("\n")
 
-        # Checar diferenças básicas
-        tf.write("== Análise de diferenças entre fontes ==\n")
-
-        asns = set()
-        orgs = set()
-        countries = set()
-
-        for val in dados_compilados.values():
-            if val:
-                asns.add(str(val.get("asn")))
-                orgs.add(str(val.get("org")))
-                countries.add(str(val.get("country")))
-
-        tf.write(f"ASN encontrados: {', '.join(asns)}\n")
-        tf.write(f"Organizações encontradas: {', '.join(orgs)}\n")
-        tf.write(f"Países encontrados: {', '.join(countries)}\n")
-
-        if len(asns) > 1:
-            tf.write("ATENÇÃO: ASN divergentes encontrados entre as fontes.\n")
-        if len(orgs) > 1:
-            tf.write("ATENÇÃO: Organizações divergentes encontradas entre as fontes.\n")
-        if len(countries) > 1:
-            tf.write("ATENÇÃO: Países divergentes encontrados entre as fontes.\n")
-
 
 def main():
-    ip = input("Digite o IP para consulta compilada ASN: ").strip()
-    dados_bgpview = consulta_bgpview(ip)
-    dados_ipinfo = consulta_ipinfo(ip)
-    dados_ipapi = consulta_ipapi(ip)
-    dados_ripe = consulta_ripe(ip)
+    ip = input("Enter the IP address for full OSINT query: ").strip()
+    data_bgpview = consult_bgpview(ip)
+    data_ipinfo = consult_ipinfo(ip)
+    data_ipapi = consult_ipapi(ip)
+    data_ripe = consult_ripe(ip)
+    data_rdap = consult_rdap(ip)
 
-    dados_compilados = extrair_dados(
-        dados_bgpview, dados_ipinfo, dados_ipapi, dados_ripe
+    data_compiled = extract_data(
+        data_bgpview, data_ipinfo, data_ipapi, data_ripe, data_rdap
     )
-    gerar_relatorio(ip, dados_compilados)
+    generate_report(ip, data_compiled)
     print(
-        f"Consulta concluída! Arquivos salvos: {ip.replace('.', '_')}_asn_compilado.json e .txt"
+        f"\n✅ Query completed! Files saved as: {ip.replace('.', '_')}_asn_report.json and .txt"
     )
 
 
