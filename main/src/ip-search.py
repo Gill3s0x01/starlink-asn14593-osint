@@ -57,19 +57,10 @@ def extrair_dados(dados_bgpview, dados_ipinfo, dados_ipapi, dados_ripe):
             asn = asn_data.get("asn")
             org = asn_data.get("name")
             country = asn_data.get("country_code")
-        else:  
-            asn = org = country
+        else:
+            asn = org = country = None
         prefixes = dados_bgpview["data"].get("prefixes", [])
-        prefix = 
-            prefixes[0].get("prefix") if prefixes else None
-            resultado["bgpview"] = {
-                "asn": asn,
-                "org": org,
-                "country": country,
-                "prefix": prefix
-            }
-            if prefixes else None
-        
+        prefix = prefixes[0].get("prefix") if prefixes else None
         resultado["bgpview"] = {
             "asn": asn,
             "org": org,
